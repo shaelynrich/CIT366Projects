@@ -1,17 +1,16 @@
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h2 class="list-group-item-heading">Contact Name</h2>
-    <img [src]=""
-         alt=""
-         class="img-responsive"
-         style="max-height: 50px;">
+    <h2 class="list-group-item-heading">{{ contact.name }}</h2>
+    <img [src]="contact.imgUrl"
+         alt="{{ contact.name }}"
+         style="max-height: 100px;">
     <div class="pull-right">
     <button class="btn btn-primary">Edit</button>
     <button class="btn btn-danger">Delete</button>
     </div>
   </div>
   <div class="panel-body">
-    <p><strong>Email:</strong></p>
-    <p><strong>Phone:</strong></p>
+    <p><strong>Email: </strong>{{ contact.email }}</p>
+    <p><strong>Phone Number: </strong>{{ contact.phone }}</p>
   </div>
 </div>
