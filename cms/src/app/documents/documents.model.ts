@@ -1,16 +1,16 @@
 export class Documents {
-  public documentId: string;
+  public id: string;
   public name: string;
   public description: string;
-  public fileUrl: string;
+  public url: string;
   public children: string;
 
 
-  constructor(documentId: string, name: string, description: string, fileUrl: string, children: string){
-    this.documentId = documentId;
+  constructor(id: string, name: string, description: string, url: string, children: string){
+    this.id = id;
     this.name = name;
     this.description = description;
-    this.fileUrl = fileUrl;
+    this.url = url;
     this.children = children;
   }
 }

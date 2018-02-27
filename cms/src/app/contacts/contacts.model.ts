@@ -1,17 +1,32 @@
 export class Contacts {
-  public contactId: string;
+  public id: string;
   public name: string;
   public email: string;
   public phone: string;
-  public imgUrl: string;
-  public group: string;
+  public imageUrl: string;
+  public group: Contacts[];
 
-  constructor(contactId: string, name: string, email: string, phone: string, imgUrl: string, group: string) {
-    this.contactId = contactId;
+  constructor(id: string, name: string, email: string, phone: string, imageUrl: string, group: Contacts[]) {
+    this.id = id;
     this.name = name;
     this.email = email;
     this.phone = phone;
-    this.imgUrl = imgUrl;
+    this.imageUrl = imageUrl;
     this.group = group;
   }
 }
+
+// import {Injectable} from "@angular/core";
+//
+// @Injectable()
+// export class Contacts {
+//
+//   constructor(public id: string,
+//               public name: string,
+//               public email: string,
+//               public phone: string,
+//               public imageUrl: string,
+//               public group: Contacts[]){
+// }
+// }
+
