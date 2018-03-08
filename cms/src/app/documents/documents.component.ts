@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {Documents} from "./documents.model";
+import {Document} from "./document.model";
 import {DocumentsService} from "./documents.service";
 
 @Component({
@@ -9,14 +9,14 @@ import {DocumentsService} from "./documents.service";
 })
 export class DocumentsComponent implements OnInit {
   //document: Documents;
-  selectedDocument: Documents;
+  selectedDocument: Document;
 
   constructor(private documentService: DocumentsService) { }
 
   ngOnInit() {
     this.documentService.documentSelectedEvent
       .subscribe(
-        (document: Documents) => {
+        (document: Document) => {
           this.selectedDocument = document;
     }
       );

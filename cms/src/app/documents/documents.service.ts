@@ -1,27 +1,42 @@
 import {MOCKDOCUMENTS} from "./MOCKDOCUMENTS";
-import {Documents} from "./documents.model";
+import {Document} from "./document.model";
 import {EventEmitter, Injectable} from "@angular/core";
 
 @Injectable()
 export class DocumentsService {
-  documents: Documents[] = [];
-  documentSelectedEvent = new EventEmitter<Documents>();
+  documents: Document[] = [];
+  documentSelectedEvent = new EventEmitter<Document>();
+  documentChangedEvent = new EventEmitter<Document[]>()
 
   constructor() {
     this.documents = MOCKDOCUMENTS;
   }
 
-  getDocuments(): Documents[] {
+  getDocuments(): Document[] {
     return this.documents.slice();
   }
 
-  getContact(id: string): Documents {
+  getDocument(id: string): Document {
     for(let document of this.documents){
       if (document.id === id){
         return document;
       }
     }
     return null;
+  }
+
+  deleteDocument(document: Document) {
+    if (document === null) {
+      return;
+    }
+
+    const pos = this.documents.indexOf(document);
+    if (pos < 0) {
+      return;
+    }
+
+    this.documents.splice(pos, 1);
+    this.documentChangedEvent.emit(this.documents.slice());
   }
 
 }
