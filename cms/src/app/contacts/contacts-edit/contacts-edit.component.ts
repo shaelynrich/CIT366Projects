@@ -43,8 +43,8 @@ export class ContactsEditComponent implements OnInit {
       this.editMode = true;
       this.contact = JSON.parse(JSON.stringify(this.originalContact));
 
-       if (this.groupContacts !== undefined || this.groupContacts !== null){
-        this.groupContacts = this.groupContacts.slice();
+       if (this.originalContact.group){
+        this.groupContacts = this.originalContact.group.slice();
     }
   }
       )
