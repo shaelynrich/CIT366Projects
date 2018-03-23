@@ -8,7 +8,6 @@ import {DocumentsService} from "./documents.service";
   styleUrls: ['./documents.component.css']
 })
 export class DocumentsComponent implements OnInit {
-  //document: Documents;
   selectedDocument: Document;
 
   constructor(private documentService: DocumentsService) { }
