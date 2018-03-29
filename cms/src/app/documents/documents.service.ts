@@ -2,7 +2,11 @@ import {MOCKDOCUMENTS} from "./MOCKDOCUMENTS";
 import {Document} from "./document.model";
 import {EventEmitter, Injectable} from "@angular/core";
 import { Subject } from 'rxjs/Subject';
-
+import {HttpClient} from "@angular/common/http";
+import {Http} from "@angular/http";
+import {Response} from "@angular/http";
+import 'rxjs/add/operator/map';
+import {Headers} from "@angular/http";
 
 @Injectable()
 export class DocumentsService {
@@ -15,13 +19,15 @@ export class DocumentsService {
   documentsListClone;
 
 
-  constructor() {
-    this.documents = MOCKDOCUMENTS;
-    this.maxDocumentId = this.getMaxId();
+  constructor(private http: Http) {
+    // this.documents = MOCKDOCUMENTS;
+    // this.maxDocumentId = this.getMaxId();
+    this.initDocuments();
   }
 
   getDocuments(): Document[] {
     return this.documents.slice();
+    //return this.http.get();
   }
 
   getDocument(id: string): Document {
@@ -42,20 +48,11 @@ export class DocumentsService {
     if (pos < 0) {
       return;
     }
-    // let tmpDocuments: Document[] = [];
-    // const docsLength = this.documents.length;
-    // for (let i=0; i < pos; i++) {
-    //   tmpDocuments.push(this.documents[i]);
-    // }
-    // for (let j=pos+1; j< docsLength; j++) {
-    //   tmpDocuments.push(this.documents[j]);
-    // }
 
-   // this.documentsListClone = tmpDocuments;
     this.documents.splice(pos, 1);
-     //this.documents = this.documents.splice(pos, 1);
-     this.documentsListClone = this.documents.slice();
-    this.documentListChangedEvent.next(this.documentsListClone);
+    this.documentsListClone = this.documents.slice();
+    //this.documentListChangedEvent.next(this.documentsListClone);
+    this.storeDocuments();
   }
 
   getMaxId(): number{
@@ -77,7 +74,8 @@ export class DocumentsService {
     newDocument.id = this.maxDocumentId.toString();
     this.documents.push(newDocument);
     this.documentsListClone = this.documents.slice();
-    this.documentListChangedEvent.next(this.documentsListClone);
+    //this.documentListChangedEvent.next(this.documentsListClone);
+    this.storeDocuments();
   }
 
   updateDocument(originalDocument: Document, newDocument: Document){
@@ -91,6 +89,36 @@ export class DocumentsService {
     newDocument.id = originalDocument.id;
     this.documents[pos] = newDocument;
     this.documentsListClone = this.documents.slice();
-    this.documentListChangedEvent.next(this.documentsListClone);
+    //this.documentListChangedEvent.next(this.documentsListClone);
+    this.storeDocuments();
   }
-}
+
+    initDocuments(){
+    this.http.get('https://prj-cms.firebaseio.com/documents.json')
+      .map(
+        (response: Response) => {
+          const data = response.json();
+          return data;
+        }
+      )
+      .subscribe(
+        (documentsReturned: Document[]) => {
+          this.documents = documentsReturned;
+          this.maxDocumentId = this.getMaxId();
+          this.documentListChangedEvent.next(this.documents.slice());
+        }
+      );
+    }
+
+    storeDocuments(){
+      JSON.stringify(this.documents);
+      const headers = new Headers();
+      headers.append('Content-Type', 'application/json');
+      return this.http.put('https://prj-cms.firebaseio.com/documents.json', this.getDocuments())
+        .subscribe(
+          () => {
+            this.documentListChangedEvent.next(this.documents.slice());
+          }
+        );
+    }
+ }

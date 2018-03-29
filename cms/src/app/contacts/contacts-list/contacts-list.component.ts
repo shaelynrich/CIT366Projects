@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Contacts} from "../contacts.model";
 import {ContactsService} from "../contacts.service";
-import {Document} from "../../documents/document.model";
 import {Subscription} from "rxjs/Subscription";
 
 @Component({
@@ -12,18 +11,13 @@ import {Subscription} from "rxjs/Subscription";
 export class ContactsListComponent implements OnInit {
   private subscription: Subscription;
   contacts: Contacts[] = [];
+  term: String;
 
   constructor(private contactService: ContactsService) {
     this.contacts = this.contactService.getContacts();
   }
 
   ngOnInit() {
-    // this.contactService.contactChangedEvent
-    //   .subscribe(
-    //     (contacts: Contacts[])=> {
-    //       this.contacts = contacts;
-    // }
-    //   );
     this.subscription = this.contactService.contactListChangedEvent
       .subscribe(
         (contactsList: Contacts[]) => {
@@ -34,5 +28,9 @@ export class ContactsListComponent implements OnInit {
 
   onContactSelected(contact: Contacts) {
     this.contactService.contactSelectedEvent.emit(contact);
+  }
+
+  onKeyPress(value: string){
+    this.term = value;
   }
 }
