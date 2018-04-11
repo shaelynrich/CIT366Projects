@@ -2,9 +2,11 @@ var express = require('express');
 var Contact = require('../models/contact');
 var SequenceGenerator = require('../routes/SequenceGenerator');
 var router = express.Router();
+module.exports = router;
 
-var getContacts = function (request, response)
-{  Contact.find()
+
+var getContacts = function (response) {
+  Contact.find()
   .populate('group')
   .exec(function (err, contacts) {
     if (err) {
@@ -14,6 +16,7 @@ var getContacts = function (request, response)
       });
     }
     response.status(200).json({
+      contacts: 'Success',
       obj: contacts
     });
   });
@@ -21,13 +24,12 @@ var getContacts = function (request, response)
 
 var saveContact = function (response, contact)
 {
-  // replace contacts in group contact with their primary key (_id) values
   if (contact.group && contact.group.length > 0) {
     for (let groupContact of contact.group) {
       groupContact = groupContact._id;
     }
   }
-  Contact.save(function (err, result) {
+  contact.save(function (err, result) {
     response.setHeader('Content-Type', 'application/json');
   if (err) {
     return response.status(500).json({
@@ -40,14 +42,14 @@ var saveContact = function (response, contact)
 }
 
 var deleteContact = function (response, contact)
-{ Contact.remove(function(err, result) {
+{ contact.remove(function(err, result) {
   if (err) {
     return response.status(500).json({
       title: 'An error occurred',
       error: err
     });
   }
-  getContacts();
+  getContacts(response);
 });
 }
 

@@ -29,12 +29,14 @@ app.use(logger('dev')); // Tell express to use the Morgan logger
 // root directory for your web site
 app.use(express.static(path.join(__dirname, 'dist')));
 
-
 app.use('/', index);
 app.use('/messages', messageRoutes);
 app.use('/contacts', contactRoutes);
 app.use('/documents', documentRoutes);
 
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist/index.html'));
+});
 
 // Define the port address and tell express to use this port
 const port = process.env.PORT || '3000';
@@ -45,4 +47,3 @@ const server = http.createServer(app);
 
 // Tell the server to start listening on the provided port
 server.listen(port, function() {console.log("API running on localhost: " + port)});
-

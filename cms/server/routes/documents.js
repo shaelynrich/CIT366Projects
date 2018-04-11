@@ -2,9 +2,10 @@ var express = require('express');
 var Document = require('../models/document');
 var SequenceGenerator = require('../routes/SequenceGenerator');
 var router = express.Router();
+module.exports = router;
 
-var getDocuments = function (request, response)
-{  Document.find()
+var getDocuments = function (response) {
+  Document.find()
     .exec(function (err, documents) {
       if (err) {
         return response.status(500).json({
@@ -13,32 +14,33 @@ var getDocuments = function (request, response)
         });
       }
       response.status(200).json({
+        document: 'Success',
         obj: documents
       });
     });
 }
 
 var saveDocument = function (response, document)
-{  Document.save(function (err, result) {
+{  document.save(function (err, result) {
     if (err) {
       return response.status(500).json({
         title: 'An error occurred',
         error: err
       });
     }
-    getDocuments();
+    getDocuments(response);
   });
 }
 
 var deleteDocument = function (response, document)
-{ Document.remove(function(err, result) {
+{ document.remove(function(err, result) {
   if (err) {
     return response.status(500).json({
       title: 'An error occurred',
       error: err
       });
     }
-  getDocuments();
+  getDocuments(response);
   });
 }
 
@@ -46,7 +48,7 @@ router.get('/', function (request, response, next){
   getDocuments(response);
 });
 
-router.post('/', function (request, response, next) {
+router.post('/', function (request, response) {
   var maxDocumentId = SequenceGenerator.nextId("documents");
   var document = new Document({
     id: maxDocumentId,

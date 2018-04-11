@@ -1,9 +1,7 @@
 import {Message} from "./message.model";
-import {MOCKMESSAGES} from "./MOCKMESSAGES";
 import {Injectable, EventEmitter} from "@angular/core";
-import {Headers, Response} from "@angular/http";
-import {Http} from "@angular/http";
 import {Subject} from "rxjs/Subject";
+import {HttpHeaders, HttpClient, HttpResponse} from "@angular/common/http";
 
 @Injectable()
 export class MessagesService{
@@ -14,8 +12,7 @@ export class MessagesService{
   maxId: number;
   currentId;
 
-  constructor(private http: Http) {
-    //this.messages = MOCKMESSAGES;
+  constructor(private http: HttpClient) {
     this.initMessages();
   }
 
@@ -25,7 +22,7 @@ export class MessagesService{
 
   getMessage(id: string): Message {
     for(let message of this.messages){
-      if (message.id === id){
+      if (message.id == id){
         return message;
       }
     }
@@ -34,27 +31,44 @@ export class MessagesService{
 
   getMaxId(): number{
     this.maxId = 0;
-    for (let message of this.messages) { //each document in the documents list
-      this.currentId = parseInt(message.id); //convert document.id into a number
-      if (this.currentId > this.maxId) { //   if currentId > maxId then
-        this.maxId = this.currentId;//     maxId = current ID
+    for (let message of this.messages) {
+      this.currentId = parseInt(message.id);
+      if (this.currentId > this.maxId) {
+        this.maxId = this.currentId;
       }
     }
     return this.maxId;
   }
 
   addMessage(message: Message) {
-    this.messages.push(message);
-    this.messageChangeEvent.emit(this.messages.slice());
-    this.storeMessages();
-  }
+    if(!message){
+      return;
+    }
+
+    const headers = new HttpHeaders( {
+      'Content-Type': 'application/json'
+    });
+
+    message.id = '';
+    const strMessage = JSON.stringify(message);
+
+    this.http.post('http://localhost:3000/messages', strMessage, {headers: headers})
+      .map(
+        (response: any) => {
+          return response.obj;
+        })
+      .subscribe(
+        (messages: Message[]) => {
+          this.messages = messages;
+          this.messageListChangedEvent.next(this.messages.slice());
+        });
+    }
 
   initMessages(){
-    this.http.get('https://prj-cms.firebaseio.com/messages.json')
+    this.http.get('http://localhost:3000/messages')
       .map(
-        (response: Response) => {
-          const data = response.json();
-          return data;
+        (response: any) => {
+          return response.obj;
         }
       )
       .subscribe(
@@ -66,16 +80,16 @@ export class MessagesService{
       );
   }
 
-  storeMessages(){
-    JSON.stringify(this.messages);
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    return this.http.put('https://prj-cms.firebaseio.com/messages.json', this.getMessages())
-      .subscribe(
-        () => {
-          this.messageListChangedEvent.next(this.messages.slice());
-        }
-      );
-  }
+  // storeMessages(){
+  //   JSON.stringify(this.messages);
+  //   const headers = new Headers();
+  //   headers.append('Content-Type', 'application/json');
+  //   return this.http.put('https://prj-cms.firebaseio.com/messages.json', this.getMessages())
+  //     .subscribe(
+  //       () => {
+  //         this.messageListChangedEvent.next(this.messages.slice());
+  //       }
+  //     );
+  // }
 }
 

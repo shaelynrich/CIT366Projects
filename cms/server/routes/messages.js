@@ -2,8 +2,9 @@ var express = require('express');
 var Message = require('../models/message');
 var SequenceGenerator = require('../routes/SequenceGenerator');
 var router = express.Router();
+module.exports = router;
 
-var getMessages = function (request, response)
+var getMessages = function (response)
 {  Message.find()
   .exec(function (err, messages) {
     if (err) {
@@ -13,32 +14,33 @@ var getMessages = function (request, response)
       });
     }
     response.status(200).json({
+      messages: 'Success',
       obj: messages
     });
   });
 }
 
 var saveMessage = function (response, message)
-{  Message.save(function (err, result) {
+{  message.save(function (err, result) {
   if (err) {
     return response.status(500).json({
       title: 'An error occurred',
       error: err
     });
   }
-  getMessages();
+  getMessages(response);
 });
 }
 
 var deleteMessage = function (response, message)
-{ Message.remove(function(err, result) {
+{ message.remove(function(err, result) {
   if (err) {
     return response.status(500).json({
       title: 'An error occurred',
       error: err
     });
   }
-  getMessages();
+  getMessages(response);
 });
 }
 
