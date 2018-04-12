@@ -2,6 +2,9 @@ import {Message} from "./message.model";
 import {Injectable, EventEmitter} from "@angular/core";
 import {Subject} from "rxjs/Subject";
 import {HttpHeaders, HttpClient, HttpResponse} from "@angular/common/http";
+import {ContactsService} from "../contacts/contacts.service";
+import {Contacts} from "../contacts/contacts.model";
+import {Subscription} from "rxjs/Subscription";
 
 @Injectable()
 export class MessagesService{
@@ -11,8 +14,9 @@ export class MessagesService{
   maxMessageId: number;
   maxId: number;
   currentId;
+  private contactSubscription: Subscription;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private contactService: ContactsService) {
     this.initMessages();
   }
 
@@ -65,19 +69,38 @@ export class MessagesService{
     }
 
   initMessages(){
-    this.http.get('http://localhost:3000/messages')
-      .map(
-        (response: any) => {
-          return response.obj;
-        }
-      )
+    this.contactSubscription = this.contactService.contactListChangedEvent
       .subscribe(
-        (messagesReturned: Message[]) => {
-          this.messages = messagesReturned;
-          this.maxMessageId = this.getMaxId();
-          this.messageListChangedEvent.next(this.messages.slice());
+        (contactsList: Contacts[]) => {
+          this.http.get('http://localhost:3000/messages')
+            .map(
+              (response: any) => {
+                return response.obj;
+              }
+            )
+            .subscribe(
+              (messagesReturned: Message[]) => {
+                this.messages = messagesReturned;
+                this.maxMessageId = this.getMaxId();
+                this.messageListChangedEvent.next(this.messages.slice());
+                this.contactSubscription.unsubscribe();
+              }
+            );
         }
       );
+    // this.http.get('http://localhost:3000/messages')
+    //   .map(
+    //     (response: any) => {
+    //       return response.obj;
+    //     }
+    //   )
+    //   .subscribe(
+    //     (messagesReturned: Message[]) => {
+    //       this.messages = messagesReturned;
+    //       this.maxMessageId = this.getMaxId();
+    //       this.messageListChangedEvent.next(this.messages.slice());
+    //     }
+    //   );
   }
 
   // storeMessages(){

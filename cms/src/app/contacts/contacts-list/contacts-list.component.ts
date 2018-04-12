@@ -11,7 +11,7 @@ import {Subscription} from "rxjs/Subscription";
 export class ContactsListComponent implements OnInit {
   private subscription: Subscription;
   contacts: Contacts[] = [];
-  term: String;
+  term: String = "";
 
   constructor(private contactService: ContactsService) {
     this.contacts = this.contactService.getContacts();
